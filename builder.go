@@ -5,12 +5,12 @@ const (
 	tail = byte(1)
 )
 
-type Leaf struct {
+type Node struct {
 	char   byte
-	leaves []Leaf
+	leaves []Node
 }
 
-func BuildTree(branches [][]byte) Leaf {
+func BuildTree(branches [][]byte) Node {
 	longestBranchIndex := longestArray(branches)
 	masterBranch := buildMasterBranch(branches[longestBranchIndex])
 	otherBranches := append(branches[:longestBranchIndex], branches[longestBranchIndex+1:]...)
@@ -22,11 +22,11 @@ func BuildTree(branches [][]byte) Leaf {
 	return masterBranch
 }
 
-func InsertOne(base Leaf, branch []byte) Leaf {
+func InsertOne(base Node, branch []byte) Node {
 	return addBranch(base, branch)
 }
 
-func InsertMany(base Leaf, branches [][]byte) Leaf {
+func InsertMany(base Node, branches [][]byte) Node {
 	for _, branch := range branches {
 		base = addBranch(base, branch)
 	}
@@ -34,85 +34,85 @@ func InsertMany(base Leaf, branches [][]byte) Leaf {
 	return base
 }
 
-func newLeaf(char byte) *Leaf {
-	return &Leaf{
+func newNode(char byte) *Node {
+	return &Node{
 		char:   char,
-		leaves: make([]Leaf, 0, 1),
+		leaves: make([]Node, 0, 1),
 	}
 }
 
-func newTailLeaf() *Leaf {
-	return &Leaf{
+func newTailNode() *Node {
+	return &Node{
 		char:   tail,
 		leaves: nil,
 	}
 }
 
-func (l Leaf) IsTail() bool {
-	return getLeaf(l.leaves, tail) != nil
+func (l Node) IsTail() bool {
+	return getNode(l.leaves, tail) != nil
 }
 
 /*
-buildMasterBranch builds a root leaf from zero
+buildMasterBranch builds a root Node from zero
 */
-func buildMasterBranch(branch []byte) (leaf Leaf) {
+func buildMasterBranch(branch []byte) (node Node) {
 	if len(branch) == 0 {
-		return leaf
+		return node
 	}
 
-	rootLeaf := &Leaf{
+	rootNode := &Node{
 		char:   head,
-		leaves: make([]Leaf, 0, 1),
+		leaves: make([]Node, 0, 1),
 	}
 
-	currentLeaf := rootLeaf
+	currentNode := rootNode
 
 	for _, char := range branch {
-		leaf = *newLeaf(char)
-		currentLeaf.leaves = append(currentLeaf.leaves, leaf)
-		currentLeaf = &currentLeaf.leaves[len(currentLeaf.leaves)-1]
+		node = *newNode(char)
+		currentNode.leaves = append(currentNode.leaves, node)
+		currentNode = &currentNode.leaves[len(currentNode.leaves)-1]
 	}
 
-	currentLeaf.leaves = append(currentLeaf.leaves, *newTailLeaf())
+	currentNode.leaves = append(currentNode.leaves, *newTailNode())
 
-	return *rootLeaf
+	return *rootNode
 }
 
-func addBranch(base Leaf, branch []byte) Leaf {
+func addBranch(base Node, branch []byte) Node {
 	commonPrefixOffset := -1
-	currentLeaf := &base
+	currentNode := &base
 
 	for i, char := range branch {
-		leaf := getLeaf(currentLeaf.leaves, char)
+		Node := getNode(currentNode.leaves, char)
 
-		if leaf == nil {
+		if Node == nil {
 			commonPrefixOffset = i
 			break
 		}
 
-		currentLeaf = leaf
+		currentNode = Node
 	}
 
 	if commonPrefixOffset == -1 {
-		if getLeaf(currentLeaf.leaves, tail) == nil {
-			currentLeaf.leaves = append(currentLeaf.leaves, *newTailLeaf())
+		if getNode(currentNode.leaves, tail) == nil {
+			currentNode.leaves = append(currentNode.leaves, *newTailNode())
 		}
 
 		return base
 	}
 
 	for _, char := range branch[commonPrefixOffset:] {
-		leaf := *newLeaf(char)
-		currentLeaf.leaves = append(currentLeaf.leaves, leaf)
-		currentLeaf = &currentLeaf.leaves[len(currentLeaf.leaves)-1]
+		Node := *newNode(char)
+		currentNode.leaves = append(currentNode.leaves, Node)
+		currentNode = &currentNode.leaves[len(currentNode.leaves)-1]
 	}
 
-	currentLeaf.leaves = append(currentLeaf.leaves, *newTailLeaf())
+	currentNode.leaves = append(currentNode.leaves, *newTailNode())
 
 	return base
 }
 
-func getLeaf(leaves []Leaf, char byte) *Leaf {
+func getNode(leaves []Node, char byte) *Node {
 	for i := 0; i < len(leaves); i++ {
 		if leaves[i].char != char {
 			continue

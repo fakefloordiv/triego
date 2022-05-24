@@ -1,29 +1,29 @@
 package prefixtree
 
 type Walker interface {
-	Walk(data []byte) (leaf Leaf, err bool)
+	Walk(data []byte) (leaf Node, err bool)
 }
 
 type walker struct {
-	currentLeaf Leaf
+	currentNode Node
 }
 
-func NewWalker(root Leaf) Walker {
+func NewWalker(root Node) Walker {
 	return &walker{
-		currentLeaf: root,
+		currentNode: root,
 	}
 }
 
-func (w *walker) Walk(data []byte) (leaf Leaf, err bool) {
+func (w *walker) Walk(data []byte) (node Node, err bool) {
 	for _, char := range data {
-		childLeaf := getLeaf(w.currentLeaf.leaves, char)
+		childNode := getNode(w.currentNode.leaves, char)
 
-		if childLeaf == nil {
-			return w.currentLeaf, true
+		if childNode == nil {
+			return w.currentNode, true
 		}
 
-		w.currentLeaf = *childLeaf
+		w.currentNode = *childNode
 	}
 
-	return w.currentLeaf, false
+	return w.currentNode, false
 }

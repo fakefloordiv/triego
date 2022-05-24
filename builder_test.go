@@ -23,75 +23,75 @@ var (
 	}
 )
 
-func testTree(t *testing.T, rootLeaf Leaf, inputBranch []byte) {
+func testTree(t *testing.T, rootNode Node, inputBranch []byte) {
 	t.Run("Part of correct input data", func(t *testing.T) {
-		walker := NewWalker(rootLeaf)
+		walker := NewWalker(rootNode)
 		firstHalf := inputBranch[:len(inputBranch)/2]
-		leaf, err := walker.Walk(firstHalf)
+		Node, err := walker.Walk(firstHalf)
 
 		if err {
 			t.Error("test failed: no match found")
-		} else if leaf.IsTail() {
-			t.Error("returned leaf must not be tailing")
+		} else if Node.IsTail() {
+			t.Error("returned Node must not be tailing")
 		}
 	})
 
 	t.Run("Two parts of correct data", func(t *testing.T) {
-		walker := NewWalker(rootLeaf)
+		walker := NewWalker(rootNode)
 		firstHalf, secondHalf := inputBranch[:len(inputBranch)/2], inputBranch[len(inputBranch)/2:]
-		leaf, err := walker.Walk(firstHalf)
+		Node, err := walker.Walk(firstHalf)
 
 		if err {
 			t.Error("test failed: no match found for first half")
-		} else if leaf.IsTail() {
-			t.Error("returned leaf must not be tailing")
+		} else if Node.IsTail() {
+			t.Error("returned Node must not be tailing")
 		}
 
-		leaf, err = walker.Walk(secondHalf)
+		Node, err = walker.Walk(secondHalf)
 
 		if err {
 			t.Error("test failed: no match found")
-		} else if !leaf.IsTail() {
-			t.Error("returned leaf must be tailing")
+		} else if !Node.IsTail() {
+			t.Error("returned Node must be tailing")
 		}
 	})
 
 	t.Run("Full correct input data", func(t *testing.T) {
-		walker := NewWalker(rootLeaf)
-		leaf, err := walker.Walk(inputBranch)
+		walker := NewWalker(rootNode)
+		Node, err := walker.Walk(inputBranch)
 
 		if err {
 			t.Error("test failed: no match found")
-		} else if !leaf.IsTail() {
-			t.Error("returned leaf must be tailing")
+		} else if !Node.IsTail() {
+			t.Error("returned Node must be tailing")
 		}
 	})
 }
 
 func TestSingleBranchBuild(t *testing.T) {
 	tryToMatch := []byte("Hello")
-	rootLeaf := BuildTree(singleBranch)
-	testTree(t, rootLeaf, tryToMatch)
+	rootNode := BuildTree(singleBranch)
+	testTree(t, rootNode, tryToMatch)
 }
 
 func TestMultipleBranchesBuild(t *testing.T) {
 	tryToMatch := []byte(strings.Repeat("def", 6))
-	rootLeaf := BuildTree(multipleBranchesShort)
-	testTree(t, rootLeaf, tryToMatch)
+	rootNode := BuildTree(multipleBranchesShort)
+	testTree(t, rootNode, tryToMatch)
 }
 
 func TestSingleBranchInsertOne(t *testing.T) {
 	insertOne := []byte("world")
-	rootLeaf := BuildTree(singleBranch)
-	rootLeaf = InsertOne(rootLeaf, insertOne)
-	testTree(t, rootLeaf, insertOne)
+	rootNode := BuildTree(singleBranch)
+	rootNode = InsertOne(rootNode, insertOne)
+	testTree(t, rootNode, insertOne)
 }
 
 func TestMultipleBranchesInsertOne(t *testing.T) {
 	insertOne := []byte(strings.Repeat("kol", 6))
-	rootLeaf := BuildTree(multipleBranchesShort)
-	rootLeaf = InsertOne(rootLeaf, insertOne)
-	testTree(t, rootLeaf, insertOne)
+	rootNode := BuildTree(multipleBranchesShort)
+	rootNode = InsertOne(rootNode, insertOne)
+	testTree(t, rootNode, insertOne)
 }
 
 func TestSingleBranchInsertMany(t *testing.T) {
@@ -100,9 +100,9 @@ func TestSingleBranchInsertMany(t *testing.T) {
 		[]byte("world"),
 		tryToMatch,
 	}
-	rootLeaf := BuildTree(singleBranch)
-	rootLeaf = InsertMany(rootLeaf, insertMany)
-	testTree(t, rootLeaf, tryToMatch)
+	rootNode := BuildTree(singleBranch)
+	rootNode = InsertMany(rootNode, insertMany)
+	testTree(t, rootNode, tryToMatch)
 }
 
 func TestMultipleBranchesInsertMany(t *testing.T) {
@@ -111,7 +111,7 @@ func TestMultipleBranchesInsertMany(t *testing.T) {
 		[]byte(strings.Repeat("kol", 6)),
 		tryToMatch,
 	}
-	rootLeaf := BuildTree(multipleBranchesShort)
-	rootLeaf = InsertMany(rootLeaf, insertMany)
-	testTree(t, rootLeaf, tryToMatch)
+	rootNode := BuildTree(multipleBranchesShort)
+	rootNode = InsertMany(rootNode, insertMany)
+	testTree(t, rootNode, tryToMatch)
 }
