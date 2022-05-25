@@ -46,7 +46,7 @@ func BenchmarkManualWalker(b *testing.B) {
 					newBranch := getBranch(node.variants, char)
 
 					currentBranch = newBranch
-					index = 0
+					index = 1
 				} else {
 					index++
 				}
@@ -68,7 +68,7 @@ func BenchmarkManualWalker(b *testing.B) {
 					newBranch := getBranch(node.variants, char)
 
 					currentBranch = newBranch
-					index = 0
+					index = 1
 				} else {
 					index++
 				}
