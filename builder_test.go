@@ -23,46 +23,46 @@ var (
 	}
 )
 
-func testTree(t *testing.T, rootNode Node, inputBranch []byte) {
+func testTree(t *testing.T, tree Branch, inputBranch []byte) {
 	t.Run("Part of correct input data", func(t *testing.T) {
-		walker := NewWalker(rootNode)
+		myWalker := NewWalker(tree)
 		firstHalf := inputBranch[:len(inputBranch)/2]
-		Node, err := walker.Walk(firstHalf)
+		node, err := myWalker.Walk(firstHalf)
 
 		if err {
 			t.Error("test failed: no match found")
-		} else if Node.IsTail() {
+		} else if IsTail(node) {
 			t.Error("returned Node must not be tailing")
 		}
 	})
 
 	t.Run("Two parts of correct data", func(t *testing.T) {
-		walker := NewWalker(rootNode)
+		myWalker := NewWalker(tree)
 		firstHalf, secondHalf := inputBranch[:len(inputBranch)/2], inputBranch[len(inputBranch)/2:]
-		Node, err := walker.Walk(firstHalf)
+		node, err := myWalker.Walk(firstHalf)
 
 		if err {
 			t.Error("test failed: no match found for first half")
-		} else if Node.IsTail() {
+		} else if IsTail(node) {
 			t.Error("returned Node must not be tailing")
 		}
 
-		Node, err = walker.Walk(secondHalf)
+		node, err = myWalker.Walk(secondHalf)
 
 		if err {
 			t.Error("test failed: no match found")
-		} else if !Node.IsTail() {
-			t.Error("returned Node must be tailing")
+		} else if !IsTail(node) {
+			t.Error("returned Node must be tailing", node)
 		}
 	})
 
 	t.Run("Full correct input data", func(t *testing.T) {
-		walker := NewWalker(rootNode)
-		Node, err := walker.Walk(inputBranch)
+		myWalker := NewWalker(tree)
+		node, err := myWalker.Walk(inputBranch)
 
 		if err {
 			t.Error("test failed: no match found")
-		} else if !Node.IsTail() {
+		} else if !IsTail(node) {
 			t.Error("returned Node must be tailing")
 		}
 	})
@@ -111,7 +111,8 @@ func TestMultipleBranchesInsertMany(t *testing.T) {
 		[]byte(strings.Repeat("kol", 6)),
 		tryToMatch,
 	}
-	rootNode := BuildTree(multipleBranchesShort)
-	rootNode = InsertMany(rootNode, insertMany)
-	testTree(t, rootNode, tryToMatch)
+	rootBranch := BuildTree(multipleBranchesShort)
+	rootBranch = InsertMany(rootBranch, insertMany)
+
+	testTree(t, rootBranch, tryToMatch)
 }
