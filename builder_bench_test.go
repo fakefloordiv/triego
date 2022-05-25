@@ -18,15 +18,15 @@ var (
 func BenchmarkBuiltInWalker(b *testing.B) {
 	b.Run("shortTree", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			walker := NewWalker(shortTree)
-			walker.Walk(shortTreeBranch)
+			myWalker := NewWalker(shortTree)
+			myWalker.Walk(shortTreeBranch)
 		}
 	})
 
 	b.Run("longTree", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			walker := NewWalker(longTree)
-			walker.Walk(longTreeBranch)
+			myWalker := NewWalker(longTree)
+			myWalker.Walk(longTreeBranch)
 		}
 	})
 }
@@ -34,14 +34,21 @@ func BenchmarkBuiltInWalker(b *testing.B) {
 func BenchmarkManualWalker(b *testing.B) {
 	b.Run("shortTree", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			currentLeaf := shortTree
+			var (
+				index         int
+				currentBranch = shortTree
+			)
 
 			for _, char := range shortTreeBranch {
-				for _, leaf := range currentLeaf.leaves {
-					if leaf.char == char {
-						currentLeaf = leaf
-						break
-					}
+				node := currentBranch[index]
+
+				if node.char != char {
+					newBranch := getBranch(node.variants, char)
+
+					currentBranch = newBranch
+					index = 1
+				} else {
+					index++
 				}
 			}
 		}
@@ -49,14 +56,21 @@ func BenchmarkManualWalker(b *testing.B) {
 
 	b.Run("longTree", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			currentLeaf := longTree
+			var (
+				index         int
+				currentBranch = longTree
+			)
 
-			for _, char := range longTreeBranch {
-				for _, leaf := range currentLeaf.leaves {
-					if leaf.char == char {
-						currentLeaf = leaf
-						break
-					}
+			for _, char := range shortTreeBranch {
+				node := currentBranch[index]
+
+				if node.char != char {
+					newBranch := getBranch(node.variants, char)
+
+					currentBranch = newBranch
+					index = 1
+				} else {
+					index++
 				}
 			}
 		}
